@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markr — 10 Sugestões de Ícone (AppIcon + Menu Bar)</title>
+<style>
+  :root {
+    --bg: #07080a;
+    --surface: #0d0d0d;
+    --card: #101111;
+    --line: #242728;
+    --ink: #f4f4f6;
+    --mut: #9c9c9d;
+    --green: #59d499;
+    --blue: #57c1ff;
+    --amber: #ffc533;
+    --coral: #ff6161;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    padding: 0 24px 100px;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; }
+  header {
+    padding: 56px 0 36px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 36px;
+  }
+  .kicker {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1.2px;
+  }
+  header p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: var(--mut);
+    max-width: 68ch;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .card:hover {
+    border-color: rgba(89, 212, 153, 0.45);
+    transform: translateY(-2px);
+  }
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  /* macOS Squircle container */
+  .squircle {
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 14px 28px rgba(0,0,0,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      inset 0 0 0 1px rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 30% 20%, #1c2024 0%, #0a0b0e 75%);
+  }
+  .meta { flex: 1; }
+  .num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+  .meta h3 {
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -0.3px;
+    margin: 2px 0 6px;
+  }
+  .meta p {
+    font-size: 13px;
+    color: var(--mut);
+    line-height: 1.45;
+  }
+  /* Menu bar preview strip */
+  .mb-preview {
+    background: #15171a;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--mut);
+  }
+  .mb-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #6a6b6c;
+    font-weight: 600;
+  }
+  .mb-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f4f4f6;
+  }
+  .mb-pill {
+    background: rgba(255,255,255,0.07);
+    border-radius: 5px;
+    padding: 3px 7px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Markr · Identidade Visual</div>
+    <h1>10 Sugestões de Ícone</h1>
+    <p>Cada opção mostra o <b>Ícone do App (.app)</b> para Finder/Raycast/Spotlight e como fica a versão monocromática na <b>Menu Bar</b> ao lado do relógio. Escolha pelo número (01 a 10) ou combine elementos.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- 01 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Linhas apagadas -->
+            <rect x="14" y="15" width="32" height="5" rx="2.5" fill="#32363B"/>
+            <rect x="14" y="48" width="24" height="5" rx="2.5" fill="#32363B"/>
+            <!-- Faixa grifada central -->
+            <rect x="12" y="26" width="44" height="16" rx="4" fill="#59D499" fill-opacity="0.22" stroke="#59D499" stroke-width="1.8"/>
+            <rect x="17" y="31.5" width="34" height="5" rx="2.5" fill="#59D499"/>
+            <!-- Pinos de seleção (Handles) -->
+            <line x1="12" y1="21" x2="12" y2="42" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="12" cy="20" r="3.5" fill="#FFFFFF"/>
+            <line x1="56" y1="26" x2="56" y2="47" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="56" cy="48" r="3.5" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 01 · Favorito</div>
+          <h3>Grifo com Pinos</h3>
+          <p>Três linhas de texto onde a frase do meio está selecionada em verde-esmeralda com os dois pinos brancos clássicos de seleção.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <line x1="2.5" y1="3" x2="2.5" y2="12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <circle cx="2.5" cy="2.5" r="1.5" fill="currentColor"/>
+              <rect x="4.5" y="6" width="7" height="4" rx="1" fill="currentColor"/>
+              <line x1="13.5" y1="4" x2="13.5" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <circle cx="13.5" cy="13.5" r="1.5" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Glow fundo -->
+            <circle cx="34" cy="34" r="22" fill="#59D499" fill-opacity="0.12"/>
+            <!-- Cursor I-Beam -->
+            <path d="M22 15H38M22 53H38M30 15V53" stroke="#F4F4F6" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Badge Check Esmeralda -->
+            <circle cx="45" cy="25" r="11" fill="#59D499"/>
+            <path d="M40.5 25.2L43.6 28.3L49.8 21.8" stroke="#07080A" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 02</div>
+          <h3>Cursor I-Beam + Check</h3>
+          <p>O cursor nativo de seleção de texto (<code>I-Beam</code>) acompanhado do selo de confirmação instantânea. Direto e inconfundível.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M3.5 2.5H8.5M3.5 13.5H8.5M6 2.5V13.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M9.5 8.5L11.2 10.2L14.5 6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Faixa de seleção atrás do M -->
+            <rect x="10" y="25" width="48" height="18" rx="5" fill="#59D499" fill-opacity="0.2" stroke="#59D499" stroke-width="1.5"/>
+            <!-- Letra M geométrica -->
+            <path d="M18 47V21L34 36L50 21V47" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="50" cy="21" r="4" fill="#59D499"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 03</div>
+          <h3>Monograma M Grifado</h3>
+          <p>Um <b>M</b> forte atravessado por uma caixa de seleção translúcida esmeralda. Tem presença de marca própria no Dock/Spotlight.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M2.5 12.5V3.5L8 9L13.5 3.5V12.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Colchete esquerdo -->
+            <path d="M25 18H17V50H25" stroke="#59D499" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Colchete direito -->
+            <path d="M43 18H51V50H43" stroke="#59D499" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Ponto/barra central capturada -->
+            <rect x="26" y="29" width="16" height="10" rx="3" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 04</div>
+          <h3>Colchetes de Pinça</h3>
+          <p>Dois colchetes de seleção abraçando um bloco de texto branco no centro. Passa a sensação exata de "pinçar" um trecho da tela.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M5 3H2.5V13H5M11 3H13.5V13H11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="5.5" y="6" width="5" height="4" rx="1" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <defs>
+              <linearGradient id="hlGrad" x1="14" y1="44" x2="52" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#59D499"/>
+                <stop offset="1" stop-color="#57C1FF"/>
+              </linearGradient>
+            </defs>
+            <!-- Traço neon grifado -->
+            <rect x="14" y="40" width="38" height="11" rx="3.5" fill="url(#hlGrad)"/>
+            <!-- Ponta chanfrada do marca-texto -->
+            <path d="M36 16L52 32L42 42L26 26L36 16Z" fill="#F4F4F6"/>
+            <path d="M26 26L21 38L33 33L26 26Z" fill="#59D499"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 05</div>
+          <h3>Ponta Chanfrada (Marker)</h3>
+          <p>Homenagem literal ao nome <b>Markr</b>: uma ponta geométrica de caneta marca-texto deixando um rastro luminoso verde-ciano.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="11" width="12" height="3" rx="1" fill="currentColor"/>
+              <path d="M9.5 2L13.5 6L8.5 11H4.5V7L9.5 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Card de trás (original na tela) -->
+            <rect x="14" y="26" width="32" height="22" rx="5" fill="#1E2227" stroke="#3A3F47" stroke-width="2"/>
+            <line x1="20" y1="34" x2="38" y2="34" stroke="#6A6B6C" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="20" y1="40" x2="32" y2="40" stroke="#6A6B6C" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Card da frente (cópia instantânea saltando) -->
+            <rect x="22" y="16" width="32" height="22" rx="5" fill="#0F1915" stroke="#59D499" stroke-width="2.4"/>
+            <line x1="28" y1="24" x2="46" y2="24" stroke="#59D499" stroke-width="2.8" stroke-linecap="round"/>
+            <line x1="28" y1="30" x2="40" y2="30" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 06</div>
+          <h3>Duplicação Instantânea</h3>
+          <p>Um bloco de texto se desprendendo do outro com borda esmeralda — representa o texto saindo da tela direto para o clipboard.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="6" width="8.5" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <rect x="5.5" y="2.5" width="8.5" height="7" rx="1.5" fill="#15171a" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Keycap 3D Raycast -->
+            <rect x="11" y="13" width="46" height="44" rx="11" fill="#090A0C" stroke="#2C3035" stroke-width="2"/>
+            <rect x="14" y="14" width="40" height="38" rx="9" fill="#16181B" stroke="#383D44" stroke-width="1.2"/>
+            <text x="22" y="40" fill="#FFFFFF" font-family="SF Pro Display, Inter, sans-serif" font-size="22" font-weight="700">M</text>
+            <circle cx="46" cy="22" r="3.5" fill="#59D499"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 07</div>
+          <h3>Keycap Físico (Estilo Raycast)</h3>
+          <p>Uma tecla física escura chanfrada com a letra <b>M</b> e um LED verde de status no canto superior direito.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 10.5V5.5L8 8.5L11 5.5V10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 08 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Barras de seleção -->
+            <rect x="12" y="22" width="44" height="10" rx="3" fill="#23282E"/>
+            <rect x="12" y="36" width="32" height="10" rx="3" fill="#23282E"/>
+            <!-- Raio Esmeralda cortando -->
+            <path d="M38 12L24 35H35L30 56L46 31H35L38 12Z" fill="#59D499" stroke="#07080A" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 08</div>
+          <h3>Flash Select (Zero-Click)</h3>
+          <p>Duas linhas de texto atravessadas por um raio esmeralda — destaca a velocidade de copiar sem precisar dar <code>⌘C</code>.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M9 1.5L4 9H8L7 14.5L12 7H8L9 1.5Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 09 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Caixa tracejada de seleção -->
+            <rect x="15" y="19" width="38" height="30" rx="5" stroke="#57C1FF" stroke-width="2.2" stroke-dasharray="5 4"/>
+            <!-- Texto selecionado dentro -->
+            <rect x="21" y="26" width="26" height="6" rx="2" fill="#FFFFFF"/>
+            <rect x="21" y="36" width="18" height="6" rx="2" fill="#59D499"/>
+            <!-- Cursor seta no canto inferior direito -->
+            <path d="M46 41L56 46L51 48L53 53L50 54L48 49L45 52L46 41Z" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 09</div>
+          <h3>Marquee Box (Caixa de Arraste)</h3>
+          <p>A moldura pontilhada de seleção com o ponteiro do mouse no canto e as linhas de texto capturadas dentro.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2"/>
+              <rect x="4.5" y="6.5" width="7" height="3" rx="1" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="squircle">
+          <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+            <!-- Escudo sutil de fundo + Grifo -->
+            <path d="M34 13L52 20V33C52 44.5 44.2 52.8 34 56C23.8 52.8 16 44.5 16 33V20L34 13Z" fill="#131917" stroke="#59D499" stroke-width="2.2"/>
+            <!-- Grifo e cursor no centro -->
+            <rect x="23" y="29" width="22" height="10" rx="3" fill="#59D499"/>
+            <path d="M26 23H32M26 45H32M29 23V45" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="num">Opção 10</div>
+          <h3>Smart Guard + Grifo</h3>
+          <p>Combina o grifo esmeralda e o cursor <code>I-Beam</code> dentro de um escudo — destaca o diferencial da trava inteligente em campos editáveis.</p>
+        </div>
+      </div>
+      <div class="mb-preview">
+        <span class="mb-label">Na Menu Bar:</span>
+        <div class="mb-icons">
+          <span>Wi-Fi</span>
+          <span class="mb-pill">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2L13.5 4.2V8.2C13.5 11.6 11.1 13.9 8 15C4.9 13.9 2.5 11.6 2.5 8.2V4.2L8 2Z" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="5" y="6.5" width="6" height="3" rx="1" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>01:45</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

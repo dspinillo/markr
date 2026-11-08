@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markr — Plano Visual (F0)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23121212'/%3E%3Cpath d='M8 10h16v3H8zm0 5h10v3H8zm13 4.5 2.5 2.5 4.5-5' stroke='%2359d499' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --ink: #1f1c17;
+    --mut: #6d675c;
+    --line: #e3ddcf;
+    --card: #fffdf8;
+    --acc: #cc6b38;
+    --ok: #3f8f5f;
+    --warn: #b87d14;
+    --chip: #ece7db;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141311;
+      --ink: #f1ede4;
+      --mut: #a39c8e;
+      --line: #2a2823;
+      --card: #1c1b18;
+      --acc: #e08a5c;
+      --ok: #59d499;
+      --warn: #ffc533;
+      --chip: #25231f;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 0 20px 120px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  header { padding: 60px 0 40px; border-bottom: 1px solid var(--line); }
+  .kicker {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--acc);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 52px;
+    line-height: 1.04;
+    letter-spacing: -1.6px;
+    font-weight: 750;
+  }
+  header p.sub {
+    margin-top: 14px;
+    font-size: 19px;
+    color: var(--mut);
+    max-width: 62ch;
+  }
+  .meta { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .meta span {
+    background: var(--chip);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12.5px;
+    color: var(--mut);
+  }
+  .meta span b { color: var(--ink); }
+  section { padding: 52px 0; border-bottom: 1px solid var(--line); }
+  h2 {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--acc);
+    margin-bottom: 6px;
+  }
+  h2 + p.lead {
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -.3px;
+    margin-bottom: 22px;
+  }
+
+  /* 2. Fases */
+  .fases {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+    gap: 14px;
+  }
+  .fase {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .fase.now {
+    border-color: var(--acc);
+    box-shadow: 0 0 0 1px var(--acc);
+  }
+  .fase .num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mut);
+    letter-spacing: .08em;
+  }
+  .fase h3 { font-size: 16px; margin: 4px 0 8px; }
+  .fase p { font-size: 13.5px; color: var(--mut); }
+  .fase .pronto {
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--ink);
+    border-top: 1px dashed var(--line);
+    padding-top: 8px;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 1px 7px;
+    margin-left: 6px;
+    vertical-align: 1px;
+  }
+  .tag.atual { background: var(--acc); color: #fff; }
+  .tag.todo { background: var(--chip); color: var(--mut); }
+
+  /* 3. Arquitetura */
+  .arq {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 26px;
+  }
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .node {
+    flex: 1 1 155px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 13px 14px;
+    min-width: 145px;
+  }
+  .node .step {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--acc);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .node b { display: block; font-size: 14px; margin-top: 2px; }
+  .node small {
+    color: var(--mut);
+    font-size: 12px;
+    line-height: 1.45;
+    display: block;
+    margin-top: 4px;
+  }
+  .arrow { align-self: center; color: var(--mut); font-size: 18px; flex: 0 0 auto; }
+  .stacks { margin-top: 20px; font-size: 13.5px; color: var(--mut); }
+  .stacks li { margin-left: 18px; margin-bottom: 5px; }
+  .stacks li b { color: var(--ink); }
+
+  /* 4. Mockups das 3 Direções */
+  .dir { margin-top: 38px; }
+  .dirhead {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .dirhead h3 { font-size: 22px; letter-spacing: -.3px; }
+  .dirhead span.arch {
+    font-size: 12px;
+    color: var(--mut);
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 999px;
+    padding: 2px 11px;
+  }
+  .dir > p.intent {
+    font-size: 13.5px;
+    color: var(--mut);
+    margin-bottom: 16px;
+    max-width: 78ch;
+  }
+  .mockrow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 820px) {
+    .mockrow { grid-template-columns: 1fr; }
+    h1 { font-size: 36px; }
+  }
+  .stage {
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(145deg, rgba(0,0,0,0.18), rgba(0,0,0,0.04));
+  }
+  .stage-caption {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--mut);
+    margin-bottom: 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  /* Menubar strip */
+  .menubar {
+    width: 340px;
+    height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 12px;
+    gap: 12px;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .menubar .mb-icon {
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Popover base */
+  .popover {
+    width: 340px;
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 13px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.38);
+  }
+
+  /* --- DIREÇÃO A: RAYCAST (Cockpit Escuro) --- */
+  .ray-mb { background: #121316; color: #d3d3d4; border: 1px solid #242728; }
+  .ray-mb .mb-icon.active { background: rgba(89,212,153,0.16); color: #59d499; }
+  .ray-mb .mb-icon.guard { background: rgba(255,197,51,0.16); color: #ffc533; }
+  .ray-pop {
+    background: #07080a;
+    color: #f4f4f6;
+    border: 1px solid #242728;
+    font-family: Inter, -apple-system, sans-serif;
+  }
+  .ray-head {
+    padding: 12px 14px;
+    background: #0d0d0d;
+    border-bottom: 1px solid #242728;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ray-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13.5px; }
+  .ray-dot { width: 8px; height: 8px; border-radius: 50%; background: #59d499; box-shadow: 0 0 8px #59d499; }
+  .ray-dot.amber { background: #ffc533; box-shadow: 0 0 8px #ffc533; }
+  .ray-pill-toggle {
+    background: rgba(89,212,153,0.15);
+    color: #59d499;
+    border: 1px solid rgba(89,212,153,0.3);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 999px;
+  }
+  .ray-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ray-card {
+    background: #101111;
+    border: 1px solid #242728;
+    border-radius: 8px;
+    padding: 10px 11px;
+  }
+  .ray-card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9c9c9d;
+    margin-bottom: 5px;
+  }
+  .ray-card-meta span.badge-ok { color: #59d499; font-weight: 600; }
+  .ray-card-meta span.badge-warn { color: #ffc533; font-weight: 600; }
+  .ray-clip-text {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: #f4f4f6;
+    background: #07080a;
+    border: 1px solid #1c1e1f;
+    border-radius: 6px;
+    padding: 7px 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ray-cta-row {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .ray-white-pill {
+    background: #ffffff;
+    color: #000000;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .ray-kbd {
+    background: linear-gradient(180deg, #18191a, #0d0d0d);
+    border: 1px solid #2c2f30;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10.5px;
+    color: #9c9c9d;
+    font-family: "SF Mono", monospace;
+  }
+  .ray-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px solid #242728;
+    padding-top: 9px;
+  }
+  .ray-rule {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #cdcdcd;
+  }
+  .ray-switch {
+    width: 28px;
+    height: 16px;
+    border-radius: 999px;
+    background: #59d499;
+    position: relative;
+  }
+  .ray-switch::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #07080a;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+  .ray-foot {
+    padding: 8px 14px;
+    background: #0d0d0d;
+    border-top: 1px solid #242728;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6a6b6c;
+  }
+
+  /* --- DIREÇÃO B: LINEAR (Precisão Técnica) --- */
+  .lin-mb { background: #0a0b0d; color: #d0d6e0; border: 1px solid #23252a; }
+  .lin-mb .mb-icon { background: rgba(94,106,210,0.18); color: #828fff; }
+  .lin-pop {
+    background: #010102;
+    color: #f7f8f8;
+    border: 1px solid #23252a;
+    font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
+  }
+  .lin-head {
+    padding: 11px 14px;
+    background: #0f1011;
+    border-bottom: 1px solid #23252a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .lin-title {
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: -0.2px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .lin-badge {
+    background: rgba(94,106,210,0.16);
+    color: #828fff;
+    border: 1px solid rgba(94,106,210,0.35);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10.5px;
+    font-family: "SF Mono", monospace;
+  }
+  .lin-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 9px; }
+  .lin-panel {
+    background: #0f1011;
+    border: 1px solid #23252a;
+    border-radius: 6px;
+    padding: 9px 10px;
+  }
+  .lin-telemetry {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "SF Mono", monospace;
+    font-size: 10.5px;
+    color: #8a8f98;
+    margin-bottom: 6px;
+  }
+  .lin-telemetry b.ok { color: #27a644; }
+  .lin-telemetry b.block { color: #e2933d; }
+  .lin-quote {
+    font-size: 12px;
+    color: #d0d6e0;
+    padding-left: 8px;
+    border-left: 2px solid #5e6ad2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lin-undo-btn {
+    margin-top: 8px;
+    width: 100%;
+    background: #141516;
+    border: 1px solid #34343a;
+    color: #f7f8f8;
+    border-radius: 5px;
+    padding: 5px 9px;
+    font-size: 11.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .lin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .lin-chip {
+    background: #0f1011;
+    border: 1px solid #23252a;
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-size: 11.5px;
+    color: #d0d6e0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .lin-dot-on { width: 7px; height: 7px; border-radius: 50%; background: #5e6ad2; }
+  .lin-foot {
+    padding: 7px 14px;
+    background: #0f1011;
+    border-top: 1px solid #23252a;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: #62666d;
+    font-family: "SF Mono", monospace;
+  }
+
+  /* --- DIREÇÃO C: CLAUDE (Papel Editorial) --- */
+  .cla-mb { background: #efe9de; color: #3d3d3a; border: 1px solid #e6dfd8; }
+  .cla-mb .mb-icon { background: #cc785c; color: #faf9f5; }
+  .cla-pop {
+    background: #faf9f5;
+    color: #141413;
+    border: 1px solid #e6dfd8;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .cla-head {
+    padding: 13px 15px 10px;
+    border-bottom: 1px solid #ebe6df;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .cla-serif {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: #141413;
+  }
+  .cla-status {
+    font-size: 11.5px;
+    color: #5db872;
+    font-weight: 600;
+  }
+  .cla-status.guard { color: #cc785c; }
+  .cla-body { padding: 12px 15px; display: flex; flex-direction: column; gap: 10px; }
+  .cla-dark-well {
+    background: #181715;
+    color: #faf9f5;
+    border-radius: 9px;
+    padding: 10px 12px;
+  }
+  .cla-well-top {
+    font-size: 10.5px;
+    color: #a09d96;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .cla-well-text {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: #faf9f5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cla-restore {
+    background: #efe9de;
+    border: 1px solid #e6dfd8;
+    border-radius: 8px;
+    padding: 7px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #252523;
+  }
+  .cla-restore b { color: #cc785c; }
+  .cla-list {
+    background: #f5f0e8;
+    border: 1px solid #e6dfd8;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+    color: #3d3d3a;
+  }
+  .cla-row { display: flex; justify-content: space-between; align-items: center; }
+  .cla-pill-on {
+    background: #cc785c;
+    color: #fff;
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .cla-foot {
+    padding: 8px 15px;
+    border-top: 1px solid #ebe6df;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #8e8b82;
+  }
+
+  /* 5. Tabela de Fatiamento */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--mut);
+    background: var(--chip);
+  }
+  tr:last-child td { border-bottom: none; }
+  code {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    background: var(--chip);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  /* 6. Riscos */
+  .risks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .risk-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .risk-card h4 { font-size: 15px; margin-bottom: 6px; }
+  .risk-card p { font-size: 13.5px; color: var(--mut); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 1. VISÃO -->
+  <header>
+    <div class="kicker">F0 · Plano Visual · Convenção Oráculo</div>
+    <h1>Markr</h1>
+    <p class="sub">Marcou, copiou — utilitário nativo de barra de menus para macOS que copia automaticamente qualquer texto selecionado (arraste ou duplo/triplo clique) com trava inteligente contra campos editáveis.</p>
+    <div class="meta">
+      <span><b>Slug:</b> markr</span>
+      <span><b>Tipo:</b> desktop (Menu Bar + Popover)</span>
+      <span><b>Nível:</b> N2</span>
+      <span><b>Stack:</b> Swift 6 · SwiftUI/AppKit · AXUIElement</span>
+      <span><b>Plane:</b> MARKR (MARKR-1 a MARKR-7)</span>
+    </div>
+  </header>
+
+  <!-- 2. FUNCIONALIDADES POR FASE -->
+  <section>
+    <h2>1. Funcionalidades por fase</h2>
+    <p class="lead">Entrega fatiada do motor de Acessibilidade até o Popover final</p>
+    <div class="fases">
+      <div class="fase now">
+        <div>
+          <div class="num">FASE 0 <span class="tag atual">ATUAL</span></div>
+          <h3>Plano Visual & Direção de UI</h3>
+          <p>Scaffold N2 completo, vocabulário ubíquo (<code>CONTEXT.md</code>), issues no Plane e 3 direções de mockup para o Popover da Menu Bar.</p>
+        </div>
+        <div class="pronto"><b>Pronto quando:</b> direção A, B ou C escolhida e gravada em <code>decisions/0002-design.md</code>.</div>
+      </div>
+
+      <div class="fase">
+        <div>
+          <div class="num">FASE 1 <span class="tag todo">MARKR-1</span></div>
+          <h3>Motor AX & Trava Anti-Editável</h3>
+          <p>Monitor global passivo de mouse, warm-up automático de Chrome/Electron (<code>AXManualAccessibility</code>), extração híbrida de texto e bloqueio em campos editáveis.</p>
+        </div>
+        <div class="pronto"><b>Pronto quando:</b> copia no navegador/WhatsApp ao selecionar e bloqueia cópia ao selecionar dentro de inputs para substituir.</div>
+      </div>
+
+      <div class="fase">
+        <div>
+          <div class="num">FASE 2 <span class="tag todo">MARKR-2</span></div>
+          <h3>Popover da Menu Bar & Exceções</h3>
+          <p>Interface SwiftUI em <code>NSPopover</code> na direção escolhida: último clip capturado, botão de restaurar clipboard anterior em 1 clique e blacklist por app.</p>
+        </div>
+        <div class="pronto"><b>Pronto quando:</b> Popover funcional com restauração de clipboard e toggle de ignorar o app em foco.</div>
+      </div>
+
+      <div class="fase">
+        <div>
+          <div class="num">FASE 3 <span class="tag todo">MARKR-3</span></div>
+          <h3>Login Item & Empacotamento</h3>
+          <p>Feedback visual no ícone da Menu Bar (check ao copiar), iniciar no login (<code>SMAppService</code>), atalho global de desfazer e bundle <code>build/Markr.app</code>.</p>
+        </div>
+        <div class="pronto"><b>Pronto quando:</b> <code>scripts/build-app.sh</code> gera <code>Markr.app</code> assinado e pronto para rodar no login.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. ARQUITETURA -->
+  <section>
+    <h2>2. Arquitetura</h2>
+    <p class="lead">Pipeline passivo em 5 estágios sem travar o cursor nem sujar o clipboard em inputs</p>
+    <div class="arq">
+      <div class="pipeline">
+        <div class="node">
+          <span class="step">1. Gesto</span>
+          <b>SelectionMonitor</b>
+          <small>Observa <code>leftMouseDown</code>, <code>Dragged</code> (≥ 6pt), duplo/triplo clique e <code>Shift+Clique</code>.</small>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <span class="step">2. Warm-up</span>
+          <b>AXWarmup</b>
+          <small>Ativa <code>AXManualAccessibility</code> no PID ao focar o app ou iniciar o clique (Chrome/WhatsApp).</small>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <span class="step">3. Proteção</span>
+          <b>EditableGuard</b>
+          <small>Sobe até 40 níveis AX no <code>mouseDown</code>, <code>mouseUp</code> e foco. Se editável, aborta na hora.</small>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <span class="step">4. Leitura</span>
+          <b>AXExtractor</b>
+          <small>Lê <code>kAXSelectedTextAttribute</code> ou <code>AXSelectedTextMarkerRange</code> no <code>AXWebArea</code>.</small>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <span class="step">5. Salva-vidas</span>
+          <b>AutoClip + Undo</b>
+          <small>Guarda o clipboard antigo em <code>previousClip</code> e grava o texto marcado no <code>NSPasteboard</code>.</small>
+        </div>
+      </div>
+      <ul class="stacks">
+        <li><b>Monitor passivo (<code>NSEvent.addGlobalMonitorForEvents</code>):</b> nunca intercepta ou atrasa cliques do sistema.</li>
+        <li><b>Checagem tripla na <code>EditableGuard</code>:</b> verifica o ponto inicial do clique (<code>mouseDown</code>), o ponto final (<code>mouseUp</code>) e o elemento focado — mesmo que o usuário arraste o mouse para fora da caixa de texto, a trava sabe que a seleção nasceu num input.</li>
+        <li><b>Terminais ignorados de fábrica:</b> <code>Terminal.app</code>, <code>iTerm2</code>, <code>Warp</code>, <code>Ghostty</code>, <code>Kitty</code> e <code>Alacritty</code> já vêm na lista de exceções para não duplicar o comportamento nativo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. DESIGN / MOCKUPS -->
+  <section>
+    <h2>3. Direções de Design (Mockups do Popover)</h2>
+    <p class="lead">Escolha entre A, B ou C — cada variação mostra o estado Copiado (esquerda) e o estado Protegido pela Trava Editável (direita)</p>
+
+    <!-- DIREÇÃO A -->
+    <div class="dir">
+      <div class="dirhead">
+        <h3>Direção A — Cockpit Escuro</h3>
+        <span class="arch">Arquétipo: templates/design-md/raycast.md</span>
+      </div>
+      <p class="intent">Superfície quase-preta (<code>#07080a</code> → <code>#101111</code>), bordas hairline de <code>1px</code> em <code>#242728</code>, indicadores luminosos verde/âmbar, keycaps físicos de atalho e botão principal de restaurar clipboard em pastilha branca pura (<code>#ffffff</code>).</p>
+
+      <div class="mockrow">
+        <!-- A1: Copiado -->
+        <div class="stage">
+          <div class="stage-caption">A1 · Seleção em texto estático (Copiado)</div>
+          <div class="menubar ray-mb">
+            <span>Wi-Fi</span>
+            <span class="mb-icon active">✓ Markr</span>
+            <span>Dom 01:05</span>
+          </div>
+          <div class="popover ray-pop">
+            <div class="ray-head">
+              <div class="ray-brand"><span class="ray-dot"></span> Markr</div>
+              <span class="ray-pill-toggle">Ativo · ⌘E</span>
+            </div>
+            <div class="ray-body">
+              <div class="ray-card">
+                <div class="ray-card-meta">
+                  <span>WhatsApp · AXStaticText</span>
+                  <span class="badge-ok">✓ Copiado agora</span>
+                </div>
+                <div class="ray-clip-text">"Reunião confirmada para terça às 14h30 no link..."</div>
+                <div class="ray-cta-row">
+                  <span style="font-size:11px;color:#9c9c9d;">Anterior: <code>sk-live-98a7...</code></span>
+                  <span class="ray-white-pill">↩ Desfazer <span class="ray-kbd">⌘Z</span></span>
+                </div>
+              </div>
+              <div class="ray-rules">
+                <div class="ray-rule"><span>Trava de campos editáveis</span><span class="ray-switch"></span></div>
+                <div class="ray-rule"><span>Arrastar + Duplo clique</span><span class="ray-switch"></span></div>
+                <div class="ray-rule"><span>Ignorar WhatsApp</span><span style="font-size:11px;color:#6a6b6c;">Desligado</span></div>
+              </div>
+            </div>
+            <div class="ray-foot">
+              <span>Acessibilidade: Ativa</span>
+              <span>7 terminais ignorados</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- A2: Bloqueado em campo editável -->
+        <div class="stage">
+          <div class="stage-caption">A2 · Seleção dentro de Input (Clipboard Protegido)</div>
+          <div class="menubar ray-mb">
+            <span>Wi-Fi</span>
+            <span class="mb-icon guard">🛡 Markr</span>
+            <span>Dom 01:05</span>
+          </div>
+          <div class="popover ray-pop">
+            <div class="ray-head">
+              <div class="ray-brand"><span class="ray-dot amber"></span> Markr</div>
+              <span class="ray-pill-toggle">Ativo · ⌘E</span>
+            </div>
+            <div class="ray-body">
+              <div class="ray-card" style="border-color:rgba(255,197,51,0.35);">
+                <div class="ray-card-meta">
+                  <span>Google Chrome · AXTextField</span>
+                  <span class="badge-warn">🛡 Cópia bloqueada</span>
+                </div>
+                <div class="ray-clip-text" style="color:#9c9c9d;">Campo editável detectado — seu clipboard atual foi preservado para você colar com ⌘V.</div>
+                <div class="ray-cta-row">
+                  <span style="font-size:11px;color:#59d499;">Intacto: <code>https://docs.exemplo.com/...</code></span>
+                </div>
+              </div>
+              <div class="ray-rules">
+                <div class="ray-rule"><span>Trava de campos editáveis</span><span class="ray-switch"></span></div>
+                <div class="ray-rule"><span>Arrastar + Duplo clique</span><span class="ray-switch"></span></div>
+                <div class="ray-rule"><span>Ignorar Google Chrome</span><span style="font-size:11px;color:#6a6b6c;">Desligado</span></div>
+              </div>
+            </div>
+            <div class="ray-foot">
+              <span>EditableGuard: AXTextField</span>
+              <span>⌘Q Sair</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIREÇÃO B -->
+    <div class="dir">
+      <div class="dirhead">
+        <h3>Direção B — Precisão Técnica</h3>
+        <span class="arch">Arquétipo: templates/design-md/linear.app.md</span>
+      </div>
+      <p class="intent">Canvas profundo <code>#010102</code> com painéis carvão <code>#0f1011</code>, acento único lavanda-azul <code>#5e6ad2</code>, grade compacta de toggles e telemetria explícita do nó AX inspecionado.</p>
+
+      <div class="mockrow">
+        <!-- B1: Copiado -->
+        <div class="stage">
+          <div class="stage-caption">B1 · Seleção em texto estático (Copiado)</div>
+          <div class="menubar lin-mb">
+            <span>Wi-Fi</span>
+            <span class="mb-icon">M · ON</span>
+            <span>Dom 01:05</span>
+          </div>
+          <div class="popover lin-pop">
+            <div class="lin-head">
+              <div class="lin-title">Markr <span class="lin-badge">v0.1 · AX</span></div>
+              <span style="font-size:11.5px;color:#828fff;font-weight:600;">● Ativo</span>
+            </div>
+            <div class="lin-body">
+              <div class="lin-panel">
+                <div class="lin-telemetry">
+                  <b class="ok">AUTO_CLIP</b> · <span>WhatsApp</span> · <span>AXStaticText (drag 48pt)</span>
+                </div>
+                <div class="lin-quote">Reunião confirmada para terça às 14h30 no link...</div>
+                <div class="lin-undo-btn">
+                  <span>↩ Restaurar: <code>sk-live-98a7...</code></span>
+                  <span style="color:#8a8f98;font-family:monospace;">⌘Z</span>
+                </div>
+              </div>
+              <div class="lin-grid">
+                <div class="lin-chip"><span>EditableGuard</span><span class="lin-dot-on"></span></div>
+                <div class="lin-chip"><span>Drag Select</span><span class="lin-dot-on"></span></div>
+                <div class="lin-chip"><span>Multi-Click</span><span class="lin-dot-on"></span></div>
+                <div class="lin-chip"><span>App ativo: ON</span><span class="lin-dot-on"></span></div>
+              </div>
+            </div>
+            <div class="lin-foot">
+              <span>AXTrusted: true</span>
+              <span>7 bundleIds ignorados</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- B2: Bloqueado -->
+        <div class="stage">
+          <div class="stage-caption">B2 · Seleção dentro de Input (Clipboard Protegido)</div>
+          <div class="menubar lin-mb">
+            <span>Wi-Fi</span>
+            <span class="mb-icon">M · GUARD</span>
+            <span>Dom 01:05</span>
+          </div>
+          <div class="popover lin-pop">
+            <div class="lin-head">
+              <div class="lin-title">Markr <span class="lin-badge">v0.1 · AX</span></div>
+              <span style="font-size:11.5px;color:#e2933d;font-weight:600;">● Guard</span>
+            </div>
+            <div class="lin-body">
+              <div class="lin-panel">
+                <div class="lin-telemetry">
+                  <b class="block">SKIP_EDITABLE</b> · <span>Chrome</span> · <span>AXTextField (settable)</span>
+                </div>
+                <div class="lin-quote" style="border-left-color:#e2933d;color:#8a8f98;">Ignorado para proteger substituição via ⌘V. Clipboard mantido.</div>
+                <div class="lin-undo-btn">
+                  <span>Clipboard atual: <code>https://docs.exemplo.com/...</code></span>
+                  <span style="color:#27a644;">OK</span>
+                </div>
+              </div>
+              <div class="lin-grid">
+                <div class="lin-chip"><span>EditableGuard</span><span class="lin-dot-on"></span></div>
+                <div class="lin-chip"><span>Drag Select</span><span class="lin-dot-on"></span></div>
+                <div class="lin-chip"><span>Multi-Click</span><span class="lin-dot-on"></span></div>
+                <div class="lin-chip"><span>App ativo: ON</span><span class="lin-dot-on"></span></div>
+              </div>
+            </div>
+            <div class="lin-foot">
+              <span>depth=3 · AXEditable=true</span>
+              <span>⌘Q</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIREÇÃO C -->
+    <div class="dir">
+      <div class="dirhead">
+        <h3>Direção C — Papel Editorial</h3>
+        <span class="arch">Arquétipo: templates/design-md/claude.md</span>
+      </div>
+      <p class="intent">Superfície creme aquecida <code>#faf9f5</code> com título serifado editorial, pílulas em terracota <code>#cc785c</code> e visor escuro contrastante <code>#181715</code> reservado exclusivamente para o trecho de texto copiado.</p>
+
+      <div class="mockrow">
+        <!-- C1: Copiado -->
+        <div class="stage">
+          <div class="stage-caption">C1 · Seleção em texto estático (Copiado)</div>
+          <div class="menubar cla-mb">
+            <span>Wi-Fi</span>
+            <span class="mb-icon">Markr</span>
+            <span>Dom 01:05</span>
+          </div>
+          <div class="popover cla-pop">
+            <div class="cla-head">
+              <span class="cla-serif">Markr</span>
+              <span class="cla-status">● Copiado do WhatsApp</span>
+            </div>
+            <div class="cla-body">
+              <div class="cla-dark-well">
+                <div class="cla-well-top">
+                  <span>Última seleção marcada</span>
+                  <span>agora mesmo</span>
+                </div>
+                <div class="cla-well-text">"Reunião confirmada para terça às 14h30 no link..."</div>
+              </div>
+              <div class="cla-restore">
+                <span>Anterior: <code>sk-live-98a7...</code></span>
+                <b>↩ Restaurar (⌘Z)</b>
+              </div>
+              <div class="cla-list">
+                <div class="cla-row"><span>Proteger campos editáveis</span><span class="cla-pill-on">Ativo</span></div>
+                <div class="cla-row"><span>Arrastar e duplo clique</span><span class="cla-pill-on">Ativo</span></div>
+                <div class="cla-row"><span>Pausar no WhatsApp</span><span style="color:#8e8b82;">Não</span></div>
+              </div>
+            </div>
+            <div class="cla-foot">
+              <span>Marcou, copiou</span>
+              <span>Encerrar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- C2: Bloqueado -->
+        <div class="stage">
+          <div class="stage-caption">C2 · Seleção dentro de Input (Clipboard Protegido)</div>
+          <div class="menubar cla-mb">
+            <span>Wi-Fi</span>
+            <span class="mb-icon">Markr</span>
+            <span>Dom 01:05</span>
+          </div>
+          <div class="popover cla-pop">
+            <div class="cla-head">
+              <span class="cla-serif">Markr</span>
+              <span class="cla-status guard">● Campo editável ignorado</span>
+            </div>
+            <div class="cla-body">
+              <div class="cla-dark-well" style="background:#252320;">
+                <div class="cla-well-top">
+                  <span>Trava anti-loop acionada (Chrome)</span>
+                  <span>AXTextField</span>
+                </div>
+                <div class="cla-well-text" style="color:#e8a55a;">Seu clipboard foi preservado para colar por cima.</div>
+              </div>
+              <div class="cla-restore">
+                <span>Mantido no clipboard: <code>https://docs.exemplo.com/...</code></span>
+                <b>Intacto</b>
+              </div>
+              <div class="cla-list">
+                <div class="cla-row"><span>Proteger campos editáveis</span><span class="cla-pill-on">Ativo</span></div>
+                <div class="cla-row"><span>Arrastar e duplo clique</span><span class="cla-pill-on">Ativo</span></div>
+                <div class="cla-row"><span>Pausar no Google Chrome</span><span style="color:#8e8b82;">Não</span></div>
+              </div>
+            </div>
+            <div class="cla-foot">
+              <span>Marcou, copiou</span>
+              <span>Encerrar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. FATIAMENTO DA F1 -->
+  <section>
+    <h2>4. Fatiamento da Fase 1 (Issues no Plane)</h2>
+    <p class="lead">Tarefas que compõem a F1 (<code>MARKR-1</code>) no Plane</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Tarefa / Issue</th>
+          <th>Objetivo</th>
+          <th>Critério de Aceite</th>
+          <th>Depende de</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>T1.1</b><br><code>MARKR-4</code></td>
+          <td>Monitor global passivo de gestos de seleção (<code>SelectionMonitor</code>)</td>
+          <td>Detecta arraste (<code>drag ≥ 6pt</code>), duplo/triplo clique (<code>clickCount ≥ 2</code>) e <code>Shift+Clique</code>; ignora cliques simples ou quando <code>Cmd</code>/<code>Ctrl</code> estão pressionados.</td>
+          <td>F0 aprovado</td>
+        </tr>
+        <tr>
+          <td><b>T1.2</b><br><code>MARKR-5</code></td>
+          <td>Inspetor AX e warm-up de Chromium/Electron (<code>AccessibilityInspector</code>)</td>
+          <td>Ativa <code>AXManualAccessibility</code> e <code>AXEnhancedUserInterface</code> ao focar o app e no <code>mouseDown</code>; lê <code>kAXSelectedTextAttribute</code> e <code>AXSelectedTextMarkerRange</code> subindo até 40 níveis.</td>
+          <td>T1.1</td>
+        </tr>
+        <tr>
+          <td><b>T1.3</b><br><code>MARKR-6</code></td>
+          <td>Trava anti-loop de campos editáveis (<code>EditableGuard</code>)</td>
+          <td>Inspeciona foco, <code>mouseDown</code> e <code>mouseUp</code> (e ancestrais até <code>AXWebArea</code>). Selecionar texto dentro de <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code> ou <code>contenteditable</code> nunca sobrescreve o clipboard.</td>
+          <td>T1.2</td>
+        </tr>
+        <tr>
+          <td><b>T1.4</b><br><code>MARKR-7</code></td>
+          <td>Buffer de segurança (<code>PreviousClip</code> / Desfazer Cópia)</td>
+          <td>Salva o conteúdo anterior do <code>NSPasteboard.general</code> antes de cada <code>AutoClip</code> e permite restaurá-lo em 1 clique no Popover.</td>
+          <td>T1.2, T1.3</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 6. RISCOS E PERGUNTAS EM ABERTO -->
+  <section>
+    <h2>5. Riscos e Decisões em Aberto</h2>
+    <p class="lead">Pontos para bater o martelo antes de iniciar a F1/F2</p>
+    <div class="risks">
+      <div class="risk-card">
+        <h4>1. Qual direção visual adotar para o Popover?</h4>
+        <p>Escolher entre <b>A — Cockpit Escuro (Raycast)</b>, <b>B — Precisão Técnica (Linear)</b> ou <b>C — Papel Editorial (Claude)</b> para registrarmos em <code>decisions/0002-design.md</code>.</p>
+      </div>
+      <div class="risk-card">
+        <h4>2. Tecla modificadora para inverter a regra na hora?</h4>
+        <p>Podemos permitir que segurar <code>Option (⌥)</code> durante a seleção inverta a regra momentaneamente (ex.: forçar cópia mesmo dentro de um campo editável, ou pular a cópia num texto estático).</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

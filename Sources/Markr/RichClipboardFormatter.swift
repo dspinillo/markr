@@ -8,22 +8,25 @@ struct RichCopyPayload {
 }
 
 enum RichClipboardFormatter {
-    /// Reads the current pasteboard after a native Copy event and enriches plainText with bullets from HTML if present
+    /// Reads the current pasteboard after a native Copy event and cleans both plainText and HTML
     static func captureFromPasteboard(_ pb: NSPasteboard, fallbackText: String) -> RichCopyPayload {
-        let htmlData = pb.data(forType: .html)
+        let rawHTMLData = pb.data(forType: .html)
         let rtfData = pb.data(forType: .rtf)
         let rawPlain = pb.string(forType: .string) ?? fallbackText
 
-        let htmlString = htmlData.flatMap { String(data: $0, encoding: .utf8) }
-        let formattedPlain = formatPlainText(rawPlain: rawPlain, htmlString: htmlString)
+        let rawHTMLString = rawHTMLData.flatMap { String(data: $0, encoding: .utf8) }
+        let sanitizedHTMLString = rawHTMLString.map { sanitizeRichHTML($0) }
+        let sanitizedHTMLData = sanitizedHTMLString?.data(using: .utf8) ?? rawHTMLData
 
-        // Update the plain text representation on the pasteboard while preserving HTML and RTF!
-        if formattedPlain != rawPlain {
+        let formattedPlain = formatPlainText(rawPlain: rawPlain, htmlString: rawHTMLString)
+
+        // Update the pasteboard with the clean plain text and sanitized HTML!
+        if formattedPlain != rawPlain || sanitizedHTMLString != rawHTMLString {
             pb.clearContents()
             let item = NSPasteboardItem()
             item.setString(formattedPlain, forType: .string)
-            if let htmlData = htmlData {
-                item.setData(htmlData, forType: .html)
+            if let sanitizedHTMLData = sanitizedHTMLData {
+                item.setData(sanitizedHTMLData, forType: .html)
             }
             if let rtfData = rtfData {
                 item.setData(rtfData, forType: .rtf)
@@ -33,7 +36,7 @@ enum RichClipboardFormatter {
 
         return RichCopyPayload(
             plainText: formattedPlain,
-            htmlData: htmlData,
+            htmlData: sanitizedHTMLData,
             rtfData: rtfData
         )
     }
@@ -63,8 +66,9 @@ enum RichClipboardFormatter {
             return text.trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
-        // If plain text came without line breaks despite block tags in HTML, reconstruct line breaks from HTML block tags
-        if !text.contains("\n") && containsBlockTags(html) {
+        // If the HTML contains KaTeX / MathML or lacked newlines despite block tags,
+        // reconstruct directly from the clean HTML so hidden <math> duplicates and broken tokens are eliminated!
+        if containsMathMarkup(html) || (!text.contains("\n") && containsBlockTags(html)) {
             if let reconstructed = reconstructStructuredTextFromHTML(html), !reconstructed.isEmpty {
                 return reconstructed
             }
@@ -99,7 +103,34 @@ enum RichClipboardFormatter {
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    // MARK: - HTML Structure Helpers
+    // MARK: - HTML Sanitization & Reconstruction
+
+    /// Removes hidden MathML/LaTeX annotations from HTML so rich-paste targets don't get duplicate math either
+    static func sanitizeRichHTML(_ html: String) -> String {
+        var working = html
+        let patternsToRemove = [
+            "<math\\b[^>]*>.*?</math>",
+            "<annotation\\b[^>]*>.*?</annotation>"
+        ]
+        for pattern in patternsToRemove {
+            if let regex = try? NSRegularExpression(
+                pattern: pattern,
+                options: [.caseInsensitive, .dotMatchesLineSeparators]
+            ) {
+                working = regex.stringByReplacingMatches(
+                    in: working,
+                    range: NSRange(location: 0, length: (working as NSString).length),
+                    withTemplate: ""
+                )
+            }
+        }
+        return working
+    }
+
+    private static func containsMathMarkup(_ html: String) -> Bool {
+        let lower = html.lowercased()
+        return lower.contains("katex") || lower.contains("<math") || lower.contains("mathjax") || lower.contains("data-math=")
+    }
 
     private static func containsBlockTags(_ html: String) -> Bool {
         let lower = html.lowercased()
@@ -108,6 +139,7 @@ enum RichClipboardFormatter {
     }
 
     private static func extractListItemTexts(from html: String) -> [String] {
+        let cleanHTML = sanitizeRichHTML(html)
         guard let regex = try? NSRegularExpression(
             pattern: "<li[^>]*>(.*?)</li>",
             options: [.caseInsensitive, .dotMatchesLineSeparators]
@@ -115,8 +147,8 @@ enum RichClipboardFormatter {
             return []
         }
 
-        let nsHTML = html as NSString
-        let matches = regex.matches(in: html, range: NSRange(location: 0, length: nsHTML.length))
+        let nsHTML = cleanHTML as NSString
+        let matches = regex.matches(in: cleanHTML, range: NSRange(location: 0, length: nsHTML.length))
         var results: [String] = []
 
         for match in matches {
@@ -125,7 +157,6 @@ enum RichClipboardFormatter {
             let stripped = stripHTMLTags(innerHTML)
             let normalized = normalizeWhitespace(stripped)
             if normalized.count >= 3 {
-                // Take the first 28 chars as prefix signature to match reliably even with math nodes
                 let prefix = String(normalized.prefix(28))
                 results.append(prefix)
             }
@@ -134,6 +165,7 @@ enum RichClipboardFormatter {
     }
 
     private static func extractBoldPhrases(from html: String) -> [String] {
+        let cleanHTML = sanitizeRichHTML(html)
         guard let regex = try? NSRegularExpression(
             pattern: "<(?:strong|b|h[1-4])(?:\\s[^>]*)?>(.*?)</(?:strong|b|h[1-4])>",
             options: [.caseInsensitive, .dotMatchesLineSeparators]
@@ -141,8 +173,8 @@ enum RichClipboardFormatter {
             return []
         }
 
-        let nsHTML = html as NSString
-        let matches = regex.matches(in: html, range: NSRange(location: 0, length: nsHTML.length))
+        let nsHTML = cleanHTML as NSString
+        let matches = regex.matches(in: cleanHTML, range: NSRange(location: 0, length: nsHTML.length))
         var seen = Set<String>()
         var results: [String] = []
 
@@ -157,22 +189,32 @@ enum RichClipboardFormatter {
             seen.insert(stripped)
             results.append(stripped)
         }
-        // Sort longest first so longer bold phrases are replaced before shorter substrings
         return results.sorted { $0.count > $1.count }
     }
 
-    private static func reconstructStructuredTextFromHTML(_ html: String) -> String? {
-        var working = html
-        // Remove hidden MathML/annotation duplicates inside KaTeX
-        if let mathmlRegex = try? NSRegularExpression(
-            pattern: "<span[^>]*class=\"[^\"]*katex-mathml[^\"]*\"[^>]*>.*?</span>",
-            options: [.caseInsensitive, .dotMatchesLineSeparators]
-        ) {
-            working = mathmlRegex.stringByReplacingMatches(
-                in: working,
-                range: NSRange(location: 0, length: (working as NSString).length),
-                withTemplate: ""
-            )
+    static func reconstructStructuredTextFromHTML(_ html: String) -> String? {
+        var working = sanitizeRichHTML(html)
+
+        // Normalize visual spaces inside KaTeX/HTML math before stripping tags:
+        // <span class="mbin">÷</span> -> " ÷ ", <span class="mrel">=</span> -> " = "
+        let mathSpacingReplacements: [(String, String)] = [
+            ("<span[^>]*class=\"[^\"]*\\bmbin\\b[^\"]*\"[^>]*>(.*?)</span>", " $1 "),
+            ("<span[^>]*class=\"[^\"]*\\bmrel\\b[^\"]*\"[^>]*>(.*?)</span>", " $1 "),
+            ("<li[^>]*>\\s*<p[^>]*>", "\n• "),
+            ("</p>\\s*</li>", "\n")
+        ]
+
+        for (pattern, template) in mathSpacingReplacements {
+            if let regex = try? NSRegularExpression(
+                pattern: pattern,
+                options: [.caseInsensitive, .dotMatchesLineSeparators]
+            ) {
+                working = regex.stringByReplacingMatches(
+                    in: working,
+                    range: NSRange(location: 0, length: (working as NSString).length),
+                    withTemplate: template
+                )
+            }
         }
 
         // Replace block boundaries, bold tags, and list items with explicit newlines, *bold*, and bullets
@@ -182,6 +224,10 @@ enum RichClipboardFormatter {
             ("</(?:strong|b)>", "*"),
             ("<h[1-6](?:\\s[^>]*)?>", "\n*"),
             ("</h[1-6]>", "*\n\n"),
+            ("<ul[^>]*>", "\n"),
+            ("</ul>", "\n\n"),
+            ("<ol[^>]*>", "\n"),
+            ("</ol>", "\n\n"),
             ("<li[^>]*>", "\n• "),
             ("</li>", "\n"),
             ("</p>", "\n\n"),
@@ -200,20 +246,30 @@ enum RichClipboardFormatter {
 
         let plain = stripHTMLTags(working)
             .replacingOccurrences(of: "\u{00A0}", with: " ")
-        let lines = plain
-            .components(separatedBy: "\n")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
 
+        let rawLines = plain.components(separatedBy: "\n")
         var cleanedLines: [String] = []
         var previousWasEmpty = false
-        for line in lines {
-            if line.isEmpty {
+
+        for rawLine in rawLines {
+            // Collapse multiple spaces within the same line while keeping single spaces clean
+            let collapsed = rawLine
+                .components(separatedBy: .whitespaces)
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
+                .replacingOccurrences(of: " ,", with: ",")
+                .replacingOccurrences(of: " .", with: ".")
+                .replacingOccurrences(of: " )", with: ")")
+                .replacingOccurrences(of: "( ", with: "(")
+                .trimmingCharacters(in: .whitespaces)
+
+            if collapsed.isEmpty {
                 if !previousWasEmpty && !cleanedLines.isEmpty {
                     cleanedLines.append("")
                     previousWasEmpty = true
                 }
             } else {
-                cleanedLines.append(line)
+                cleanedLines.append(collapsed)
                 previousWasEmpty = false
             }
         }

@@ -42,6 +42,8 @@ struct ClipOrigin: Codable, Equatable {
 struct ClipItem: Identifiable, Codable, Equatable {
     let id: UUID
     let text: String
+    let htmlData: Data?
+    let rtfData: Data?
     let origin: ClipOrigin
     let trigger: ClipTrigger
     let createdAt: Date
@@ -49,15 +51,24 @@ struct ClipItem: Identifiable, Codable, Equatable {
     init(
         id: UUID = UUID(),
         text: String,
+        htmlData: Data? = nil,
+        rtfData: Data? = nil,
         origin: ClipOrigin,
         trigger: ClipTrigger,
         createdAt: Date = Date()
     ) {
         self.id = id
         self.text = text
+        self.htmlData = htmlData
+        self.rtfData = rtfData
         self.origin = origin
         self.trigger = trigger
         self.createdAt = createdAt
+    }
+
+    var isRichText: Bool {
+        (htmlData != nil && !(htmlData?.isEmpty ?? true)) ||
+        (rtfData != nil && !(rtfData?.isEmpty ?? true))
     }
 
     var singleLinePreview: String {

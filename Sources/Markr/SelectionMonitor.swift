@@ -235,18 +235,14 @@ final class SelectionMonitor: ObservableObject {
             return
         }
 
-        if let text = inspection.selectedText,
-           !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if let axText = inspection.selectedText,
+           !axText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             runtimeState = .active
-            if let item = ClipHistoryStore.shared.recordAutoClip(text: text, origin: inspection.origin) {
-                lastDiagnosticMessage = "Copiado de \(inspection.origin.displaySubtitle)"
-                if Settings.shared.playSubtleSound {
-                    NSSound(named: NSSound.Name("Tink"))?.play()
-                }
-                onAutoClip?(item)
-            } else {
-                lastDiagnosticMessage = "Já estava no clipboard (\(inspection.origin.appName))"
-            }
+            performRichCopyOrFallback(
+                axText: axText,
+                origin: inspection.origin,
+                token: token
+            )
             return
         }
 
@@ -262,6 +258,66 @@ final class SelectionMonitor: ObservableObject {
                 )
             }
         }
+    }
+
+    // MARK: - Rich Copy & Fallback
+
+    private func performRichCopyOrFallback(
+        axText: String,
+        origin: ClipOrigin,
+        token: UUID
+    ) {
+        let pb = NSPasteboard.general
+        let initialChangeCount = pb.changeCount
+
+        // Trigger native Copy (Cmd + C) now that AccessibilityInspector confirmed a valid, non-editable selection
+        triggerSyntheticCommandC()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.055) { [weak self] in
+            guard let self = self, self.activeSelectionToken == token else { return }
+
+            let didNativeCopyUpdatePasteboard = pb.changeCount != initialChangeCount
+            let payload: RichCopyPayload
+            let alreadyOnPasteboard: Bool
+
+            if didNativeCopyUpdatePasteboard {
+                payload = RichClipboardFormatter.captureFromPasteboard(pb, fallbackText: axText)
+                alreadyOnPasteboard = true
+            } else {
+                let cleaned = RichClipboardFormatter.formatPlainText(rawPlain: axText, htmlString: nil)
+                payload = RichCopyPayload(plainText: cleaned, htmlData: nil, rtfData: nil)
+                alreadyOnPasteboard = false
+            }
+
+            if let item = ClipHistoryStore.shared.recordAutoClip(
+                text: payload.plainText,
+                htmlData: payload.htmlData,
+                rtfData: payload.rtfData,
+                alreadyOnPasteboard: alreadyOnPasteboard,
+                origin: origin
+            ) {
+                self.lastDiagnosticMessage = "Copiado de \(origin.displaySubtitle)"
+                if Settings.shared.playSubtleSound {
+                    NSSound(named: NSSound.Name("Tink"))?.play()
+                }
+                self.onAutoClip?(item)
+            } else {
+                self.lastDiagnosticMessage = "Já estava no clipboard (\(origin.appName))"
+            }
+        }
+    }
+
+    private func triggerSyntheticCommandC() {
+        guard let src = CGEventSource(stateID: .combinedSessionState) else { return }
+        let cKeyCode: CGKeyCode = 0x08 // 'c' on ANSI/ISO keyboards
+        guard let keyDown = CGEvent(keyboardEventSource: src, virtualKey: cKeyCode, keyDown: true),
+              let keyUp = CGEvent(keyboardEventSource: src, virtualKey: cKeyCode, keyDown: false) else {
+            return
+        }
+        keyDown.flags = .maskCommand
+        keyUp.flags = .maskCommand
+        keyDown.post(tap: .cghidEventTap)
+        keyUp.post(tap: .cghidEventTap)
     }
 
     private static func quartzPoint(from nsPoint: NSPoint) -> CGPoint {

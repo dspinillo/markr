@@ -61,20 +61,37 @@ final class ClipHistoryStore: ObservableObject {
 
     /// Called by SelectionMonitor when Markr automatically copies selected text
     @discardableResult
-    func recordAutoClip(text: String, origin: ClipOrigin) -> ClipItem? {
+    func recordAutoClip(
+        text: String,
+        htmlData: Data? = nil,
+        rtfData: Data? = nil,
+        alreadyOnPasteboard: Bool = false,
+        origin: ClipOrigin
+    ) -> ClipItem? {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
 
         let pb = NSPasteboard.general
-        if pb.string(forType: .string) == text, currentClip?.text == text {
+        if currentClip?.text == text {
+            if !alreadyOnPasteboard {
+                RichClipboardFormatter.writeToPasteboard(pb, text: text, htmlData: htmlData, rtfData: rtfData)
+                lastChangeCount = pb.changeCount
+            }
             return nil
         }
 
-        pb.clearContents()
-        pb.setString(text, forType: .string)
+        if !alreadyOnPasteboard {
+            RichClipboardFormatter.writeToPasteboard(pb, text: text, htmlData: htmlData, rtfData: rtfData)
+        }
         lastChangeCount = pb.changeCount
 
-        let item = ClipItem(text: text, origin: origin, trigger: .autoSelect)
+        let item = ClipItem(
+            text: text,
+            htmlData: htmlData,
+            rtfData: rtfData,
+            origin: origin,
+            trigger: .autoSelect
+        )
         prependNewCapture(item)
         return item
     }
@@ -89,8 +106,12 @@ final class ClipHistoryStore: ObservableObject {
     /// Copies a history item back to the system clipboard WITHOUT changing its position or timestamp in history
     func copyItemToPasteboard(_ item: ClipItem) {
         let pb = NSPasteboard.general
-        pb.clearContents()
-        pb.setString(item.text, forType: .string)
+        RichClipboardFormatter.writeToPasteboard(
+            pb,
+            text: item.text,
+            htmlData: item.htmlData,
+            rtfData: item.rtfData
+        )
         lastChangeCount = pb.changeCount
 
         if activeClipId != item.id {

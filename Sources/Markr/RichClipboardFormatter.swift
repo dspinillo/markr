@@ -63,14 +63,14 @@ enum RichClipboardFormatter {
             .replacingOccurrences(of: "\r", with: "\n")
 
         guard let html = htmlString, !html.isEmpty else {
-            return text.trimmingCharacters(in: .whitespacesAndNewlines)
+            return cleanInlineLatexMath(text).trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
         // If the HTML contains KaTeX / MathML or lacked newlines despite block tags,
         // reconstruct directly from the clean HTML so hidden <math> duplicates and broken tokens are eliminated!
         if containsMathMarkup(html) || (!text.contains("\n") && containsBlockTags(html)) {
             if let reconstructed = reconstructStructuredTextFromHTML(html), !reconstructed.isEmpty {
-                return reconstructed
+                return cleanInlineLatexMath(reconstructed)
             }
         }
 
@@ -100,7 +100,89 @@ enum RichClipboardFormatter {
             }
         }
 
-        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+        return cleanInlineLatexMath(text).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    // MARK: - Inline LaTeX Cleanup ($...$)
+
+    /// Converts inline LaTeX math blocks like `$1.417 \div 2 = \text{R\$ } 708,50$` into clean readable Unicode text
+    static func cleanInlineLatexMath(_ input: String) -> String {
+        guard input.contains("\\") && input.contains("$") else {
+            return input
+        }
+        // Temporarily replace escaped `\$` with a placeholder so the outer `$ ... $` delimiter match doesn't stop early on `R\$`
+        let escapedDollarPlaceholder = "\u{E000}"
+        let prepared = input.replacingOccurrences(of: "\\$", with: escapedDollarPlaceholder)
+
+        guard let regex = try? NSRegularExpression(
+            pattern: "\\$([^$\\n]+)\\$",
+            options: []
+        ) else {
+            return input
+        }
+
+        let nsPrepared = prepared as NSString
+        let matches = regex.matches(in: prepared, range: NSRange(location: 0, length: nsPrepared.length))
+        guard !matches.isEmpty else { return input }
+
+        var result = prepared
+        for match in matches.reversed() {
+            guard match.numberOfRanges > 1 else { continue }
+            let innerRange = match.range(at: 1)
+            let inner = nsPrepared.substring(with: innerRange)
+            // Only treat `$...$` as LaTeX math if it contains a LaTeX backslash command or our escaped `\$` placeholder
+            guard inner.contains("\\") || inner.contains(escapedDollarPlaceholder) else { continue }
+
+            let cleanedInner = convertLatexFragmentToReadable(inner)
+            if let swiftRange = Range(match.range, in: result) {
+                result.replaceSubrange(swiftRange, with: cleanedInner)
+            }
+        }
+        return result.replacingOccurrences(of: escapedDollarPlaceholder, with: "$")
+    }
+
+    private static func convertLatexFragmentToReadable(_ latex: String) -> String {
+        var s = latex
+            .replacingOccurrences(of: "\\$", with: "\u{E000}") // temporary placeholder for literal $
+
+        // Unwrap \text{...}, \textbf{...}, \mathrm{...}
+        if let textMacroRegex = try? NSRegularExpression(
+            pattern: "\\\\(?:text|textbf|textit|mathrm|mathbf)\\{([^}]*)\\}",
+            options: []
+        ) {
+            s = textMacroRegex.stringByReplacingMatches(
+                in: s,
+                range: NSRange(location: 0, length: (s as NSString).length),
+                withTemplate: "$1"
+            )
+        }
+
+        let symbolMap: [(String, String)] = [
+            ("\\div", "÷"),
+            ("\\times", "×"),
+            ("\\cdot", "·"),
+            ("\\pm", "±"),
+            ("\\approx", "≈"),
+            ("\\neq", "≠"),
+            ("\\leq", "≤"),
+            ("\\geq", "≥"),
+            ("\\left", ""),
+            ("\\right", ""),
+            ("\\,", " "),
+            ("\\;", " "),
+            ("\\!", "")
+        ]
+
+        for (cmd, sym) in symbolMap {
+            s = s.replacingOccurrences(of: cmd, with: sym)
+        }
+
+        s = s.replacingOccurrences(of: "\u{E000}", with: "$")
+        // Collapse multiple spaces
+        s = s.components(separatedBy: .whitespaces)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+        return s
     }
 
     // MARK: - HTML Sanitization & Reconstruction
@@ -110,7 +192,8 @@ enum RichClipboardFormatter {
         var working = html
         let patternsToRemove = [
             "<math\\b[^>]*>.*?</math>",
-            "<annotation\\b[^>]*>.*?</annotation>"
+            "<annotation\\b[^>]*>.*?</annotation>",
+            "\\sdata-math=\"[^\"]*\""
         ]
         for pattern in patternsToRemove {
             if let regex = try? NSRegularExpression(
@@ -124,7 +207,7 @@ enum RichClipboardFormatter {
                 )
             }
         }
-        return working
+        return cleanInlineLatexMath(working)
     }
 
     private static func containsMathMarkup(_ html: String) -> Bool {
